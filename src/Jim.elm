@@ -114,7 +114,7 @@ taskWithError name (Args args) decoder toError =
                   )
                 ]
     in
-    Process.sleep -1
+    Process.sleep -0.10913
         |> Task.andThen
             (\_ ->
                 case

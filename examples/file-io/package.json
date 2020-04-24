@@ -3,7 +3,7 @@
     "build": "elm make --output=elm.js --optimize src/Main.elm"
   },
   "dependencies": {
-    "@ursi/jim": "~0.1.0"
+    "@ursi/jim": "^0.1.1"
   },
   "devDependencies": {
     "elm": "^0.19.1-3"
