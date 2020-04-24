@@ -27,7 +27,7 @@ type alias Model =
 init : String -> ( Model, Cmd Msg )
 init args =
     ( ()
-    , if String.isEmpty cliArgs then
+    , if String.isEmpty args then
         Task.attempt FileRead <| Fs.readFile "args.txt"
 
       else
