@@ -3,7 +3,7 @@
     "name": "ursi/jim",
     "summary": "JavaScript in Elm",
     "license": "BSD-3-Clause",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "exposed-modules": [
         "Jim"
     ],
