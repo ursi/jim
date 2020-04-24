@@ -1,5 +1,7 @@
 {
-	"scripts": {"build": "elm make --output=elm.js --optimize src/Main.elm"},
+  "scripts": {
+    "build": "elm make --output=elm.js --optimize src/Main.elm"
+  },
   "dependencies": {
     "@ursi/jim": "~0.1.0"
   },
