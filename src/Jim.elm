@@ -164,7 +164,7 @@ taskWithError name (Args args) decoder toError =
             (\_ ->
                 case
                     D.decodeValue
-                        (D.field "result" decoder)
+                        (D.at [ "result", "Ok" ] decoder)
                         (E.object
                             [ ( jimKey
                               , E.object
@@ -213,7 +213,7 @@ taskWithError name (Args args) decoder toError =
 function : String -> Args -> Decoder a -> Result D.Error a
 function name (Args args) decoder =
     D.decodeValue
-        (D.field "return" decoder)
+        (D.at [ "result", "Ok" ] decoder)
         (E.object
             [ ( jimKey
               , E.object
