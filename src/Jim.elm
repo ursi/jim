@@ -164,7 +164,7 @@ taskWithError name (Args args) decoder toError =
             (\_ ->
                 case
                     D.decodeValue
-                        (D.field "result" decoder)
+                        (D.at [ "result", "Ok" ] decoder)
                         (E.object
                             [ ( jimKey
                               , E.object
@@ -185,7 +185,21 @@ taskWithError name (Args args) decoder toError =
                                 Task.fail error
 
                     Err error ->
-                        Task.fail <| toError error
+                        case error of
+                            D.Field "result" (D.Field "Ok" (D.Failure _ value)) ->
+                                D.Failure mismatchErrorMessage value
+                                    |> toError
+                                    |> Task.fail
+
+                            D.Field "result" (D.Failure _ value) ->
+                                runtimeError
+                                    |> toError
+                                    |> Task.fail
+
+                            _ ->
+                                error
+                                    |> toError
+                                    |> Task.fail
             )
 
 
@@ -213,7 +227,7 @@ taskWithError name (Args args) decoder toError =
 function : String -> Args -> Decoder a -> Result D.Error a
 function name (Args args) decoder =
     D.decodeValue
-        (D.field "return" decoder)
+        (D.at [ "result", "Ok" ] decoder)
         (E.object
             [ ( jimKey
               , E.object
@@ -224,3 +238,24 @@ function name (Args args) decoder =
               )
             ]
         )
+        |> Result.mapError
+            (\error ->
+                case error of
+                    D.Field "result" (D.Field "Ok" (D.Failure _ value)) ->
+                        D.Failure mismatchErrorMessage value
+
+                    _ ->
+                        runtimeError
+            )
+
+
+mismatchErrorMessage : String
+mismatchErrorMessage =
+    "Your decoder did not match the return value of the function"
+
+
+runtimeError : D.Error
+runtimeError =
+    D.Failure
+        "There was a runtime error in your JavaScript code. Check the console for information."
+        (E.string "runtime error")
