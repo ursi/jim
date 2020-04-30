@@ -147,19 +147,20 @@ task name args decoder =
 -}
 taskWithError : String -> Args -> Decoder (Result x a) -> (D.Error -> x) -> Task x a
 taskWithError name (Args args) decoder toError =
-    let
-        _ =
-            E.object
-                [ ( jimKey
-                  , E.object
-                        [ ( "type", E.string "prime task" )
-                        , ( "name", E.string name )
-                        , ( "args", args )
-                        ]
-                  )
-                ]
-    in
-    Process.sleep -0.10913
+    (\_ ->
+        E.object
+            [ ( jimKey
+              , E.object
+                    [ ( "type", E.string "prime task" )
+                    , ( "name", E.string name )
+                    , ( "args", args )
+                    ]
+              )
+            ]
+    )
+        |> Task.succeed
+        |> Task.map ((|>) ())
+        |> Task.andThen (\_ -> Process.sleep -0.10913)
         |> Task.andThen
             (\_ ->
                 case
