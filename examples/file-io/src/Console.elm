@@ -8,8 +8,7 @@ import Task exposing (Task)
 
 log : Value -> ()
 log value =
-    function
-        "log"
+    function "console.log"
         (a1 value)
         (D.succeed ())
         |> Result.withDefault ()
