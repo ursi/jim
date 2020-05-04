@@ -204,7 +204,7 @@ taskWithError name (Args args) decoder toError =
             )
 
 
-{-| Please stay away from this function unless it's **absolutely necessary**. All pure functions can and should be implemented in Elm, and if your function isn't pure, consider reaching for a port or a task.
+{-| It is recommended to stay away from this function unless it's absolutely necessary. Implementing a function in Jim gives many more guarantees than is possible in JavaScript. If you're looking to implement a function that isn't pure, consider reaching for a task or a port.
 
     import Json.Decode as D
     import Json.Encode as E
