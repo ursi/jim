@@ -18,7 +18,7 @@ import Process
 import Task exposing (Task)
 
 
-{-| This type corresponds the the arguments pased to the JavaScript function. Use the functions below to pass in 0 to 5 arguments
+{-| This type corresponds the the arguments pased to the JavaScript function. Use the functions below to pass in 0 to 5 arguments. If you'd like to pass in more than 5 arguments, consider using an object instead.
 -}
 type Args
     = Args Value
