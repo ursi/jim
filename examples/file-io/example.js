@@ -7,18 +7,18 @@ const
 	jim = require(`@ursi/jim`),
 	{Elm} = require(`./elm`);
 
-jim.regFunction(`console.log`, console.log);
-jim.regFunction(`path.join`, args => path.join(...args));
+jim.function(`console.log`, console.log);
+jim.function(`path.join`, args => path.join(...args));
 
-jim.regTask(`fsp.writeFile`, fsp.writeFile);
-jim.regTask(`fsp.readFile`, filePath => {
+jim.task(`fsp.writeFile`, fsp.writeFile);
+jim.task(`fsp.readFile`, filePath => {
 	return fsp.readFile(filePath, `utf-8`);
 });
 
-jim.regTask(`fsp.readdir`, fsp.readdir);
-jim.regTask(`fs.existsSync`, fs.existsSync);
-jim.regTask(`fsp.mkdir`, fsp.mkdir);
-jim.regTask(`fsp.unlink`, fsp.unlink);
+jim.task(`fsp.readdir`, fsp.readdir);
+jim.task(`fs.existsSync`, fs.existsSync);
+jim.task(`fsp.mkdir`, fsp.mkdir);
+jim.task(`fsp.unlink`, fsp.unlink);
 
 Elm.Main.init({
 	flags: {
