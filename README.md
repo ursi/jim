@@ -10,7 +10,7 @@ Think of Jim as its own language that is a superset of [Elm](https://elm-lang.or
 
 # Documentation
 
-- [Jim](todo)
+- [Jim](https://elm-doc-preview.netlify.app/Jim?repo=ursi%2Fjim&version=master)
 - [JavaScript](todo)
 
 # Example
