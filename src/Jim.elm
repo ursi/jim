@@ -108,7 +108,7 @@ a5 a b c d e =
             -- the name used to register the JavaScript functions that represents this task
             "add"
             -- the arguments passed into the function
-            (a2 (E.String url1) (E.string url2))
+            (a2 (E.string url1) (E.string url2))
             -- a decoder for the return value of the function
             D.float
 
