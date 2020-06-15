@@ -8,6 +8,6 @@ import Json.Encode as E
 join : List String -> String
 join components =
     Jim.function "path.join"
-        (Jim.a1 <| E.list E.string components)
+        [ E.list E.string components ]
         D.string
         |> Result.withDefault ""

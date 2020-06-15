@@ -9,6 +9,6 @@ import Task exposing (Task)
 log : Value -> ()
 log value =
     function "console.log"
-        (a1 value)
+        [ value ]
         (D.succeed ())
         |> Result.withDefault ()

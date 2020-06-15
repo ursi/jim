@@ -16,28 +16,28 @@ import Task exposing (Task)
 writeFile : String -> String -> Task D.Error ()
 writeFile path content =
     Jim.task "fsp.writeFile"
-        (Jim.a2 (E.string path) (E.string content))
+        [ E.string path, E.string content ]
         (D.succeed ())
 
 
 readFile : String -> Task D.Error String
 readFile path =
     Jim.task "fsp.readFile"
-        (Jim.a1 <| E.string path)
+        [ E.string path ]
         D.string
 
 
 readdir : String -> Task D.Error (List String)
 readdir path =
     Jim.task "fsp.readdir"
-        (Jim.a1 <| E.string path)
+        [ E.string path ]
         (D.list D.string)
 
 
 exists : String -> Task D.Error Bool
 exists path =
     Jim.task "fs.existsSync"
-        (Jim.a1 <| E.string path)
+        [ E.string path ]
         D.bool
 
 
@@ -54,5 +54,5 @@ unlink path =
 fileOp : String -> String -> Task D.Error ()
 fileOp task path =
     Jim.task task
-        (Jim.a1 <| E.string path)
+        [ E.string path ]
         (D.succeed ())

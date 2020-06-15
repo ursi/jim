@@ -1,12 +1,10 @@
 module Jim exposing
-    ( Args, a0, a1, a2, a3, a4, a5
-    , task, taskWithError
+    ( task, taskWithError
     , function
     )
 
 {-|
 
-@docs Args, a0, a1, a2, a3, a4, a5
 @docs task, taskWithError
 @docs function
 
@@ -20,79 +18,16 @@ import Task exposing (Task)
 
 {-| This type corresponds the the arguments pased to the JavaScript function. Use the functions below to pass in 0 to 5 arguments. If you'd like to pass in more than 5 arguments, consider using an object instead.
 -}
-type Args
-    = Args Value
-
-
 jimKey : String
 jimKey =
     "__jim"
 
 
-{-| -}
-a0 : Args
-a0 =
-    Args <| E.object []
-
-
-{-| -}
-a1 : Value -> Args
-a1 a =
-    Args <|
-        E.object
-            [ ( "0", a )
-            , ( "length", E.int 1 )
-            ]
-
-
-{-| -}
-a2 : Value -> Value -> Args
-a2 a b =
-    Args <|
-        E.object
-            [ ( "0", a )
-            , ( "1", b )
-            , ( "length", E.int 2 )
-            ]
-
-
-{-| -}
-a3 : Value -> Value -> Value -> Args
-a3 a b c =
-    Args <|
-        E.object
-            [ ( "0", a )
-            , ( "1", b )
-            , ( "2", c )
-            , ( "length", E.int 3 )
-            ]
-
-
-{-| -}
-a4 : Value -> Value -> Value -> Value -> Args
-a4 a b c d =
-    Args <|
-        E.object
-            [ ( "0", a )
-            , ( "1", b )
-            , ( "2", c )
-            , ( "3", d )
-            , ( "length", E.int 4 )
-            ]
-
-
-{-| -}
-a5 : Value -> Value -> Value -> Value -> Value -> Args
-a5 a b c d e =
-    Args <|
-        E.object
-            [ ( "0", a )
-            , ( "1", b )
-            , ( "2", c )
-            , ( "3", d )
-            , ( "4", e )
-            , ( "length", E.int 5 )
-            ]
+encodeArgs : List Value -> Value
+encodeArgs args =
+    ( "length", E.int <| List.length args )
+        :: List.indexedMap (\i arg -> ( String.fromInt i, arg )) args
+        |> E.object
 
 
 {-| Create a task using a JavaScript function.
@@ -105,15 +40,15 @@ a5 a b c d e =
     addResponse : String -> String -> Task D.Error Float
     addResponse url1 url2 =
         task
-            -- the name used to register the JavaScript functions that represents this task
+            -- the name used to register the JavaScript function that represents this task
             "add"
-            -- the arguments passed into the function
-            (a2 (E.string url1) (E.string url2))
-            -- a decoder for the return value of the function
+            -- the arguments passed into the JavaScript function
+            [ E.string url1, E.string url2 ]
+            -- a decoder for the return value of the JavaScript function
             D.float
 
 -}
-task : String -> Args -> Decoder a -> Task D.Error a
+task : String -> List Value -> Decoder a -> Task D.Error a
 task name args decoder =
     taskWithError
         name
@@ -136,7 +71,7 @@ task name args decoder =
     addResponse url1 url2 =
         taskWithError
             "add"
-            (a2 (E.String url1) (E.string url2))
+            [ E.String url1, E.string url2 ]
             (D.oneOf
                 [ D.map Ok D.float
                 , D.map (Err << ResponseError) D.string
@@ -145,15 +80,15 @@ task name args decoder =
             DecodeError
 
 -}
-taskWithError : String -> Args -> Decoder (Result x a) -> (D.Error -> x) -> Task x a
-taskWithError name (Args args) decoder toError =
+taskWithError : String -> List Value -> Decoder (Result x a) -> (D.Error -> x) -> Task x a
+taskWithError name args decoder toError =
     (\_ ->
         E.object
             [ ( jimKey
               , E.object
                     [ ( "type", E.string "prime task" )
                     , ( "name", E.string name )
-                    , ( "args", args )
+                    , ( "args", encodeArgs args )
                     ]
               )
             ]
@@ -171,7 +106,7 @@ taskWithError name (Args args) decoder toError =
                               , E.object
                                     [ ( "type", E.string "task result" )
                                     , ( "name", E.string name )
-                                    , ( "args", args )
+                                    , ( "args", encodeArgs args )
                                     ]
                               )
                             ]
@@ -212,11 +147,11 @@ taskWithError name (Args args) decoder toError =
     addToResult : Float -> Float -> Result D.Error Float
     addToResult a b =
         function
-            -- the name used to register the function
+            -- the name used to register the JavsScript function
             "add"
-            -- the arguments passed into the function
-            (a2 (E.float a) (E.float b))
-            -- a decoder for the return value of the function
+            -- the arguments passed into the JavaScript function
+            [ E.float a, E.float b ]
+            -- a decoder for the return value of the JavaScript function
             D.float
 
     add : Float -> Float -> Float
@@ -225,8 +160,8 @@ taskWithError name (Args args) decoder toError =
             |> Result.withDefault 0
 
 -}
-function : String -> Args -> Decoder a -> Result D.Error a
-function name (Args args) decoder =
+function : String -> List Value -> Decoder a -> Result D.Error a
+function name args decoder =
     D.decodeValue
         (D.at [ "result", "Ok" ] decoder)
         (E.object
@@ -234,7 +169,7 @@ function name (Args args) decoder =
               , E.object
                     [ ( "type", E.string "function" )
                     , ( "name", E.string name )
-                    , ( "args", args )
+                    , ( "args", encodeArgs args )
                     ]
               )
             ]

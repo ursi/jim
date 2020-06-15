@@ -5,7 +5,7 @@ Think of Jim as its own language that is a superset of [Elm](https://elm-lang.or
 # Installation
 
 - **Elm:** [elm-git-install](https://github.com/Skinney/elm-git-install)
-- **[JavaScript](https://github.com/ursi/jim-js):** `npm install @ursi/jim-js`
+- **[JavaScript](https://github.com/ursi/jim-js):** `npm install @ursi/jim`
 
 
 # Documentation
@@ -37,7 +37,7 @@ import Json.Encode as E
 
 writeFile : String -> String -> Task D.Error ()
 writeFile path contents =
-	task "write file"
-	Jim.a2 (E.string path) (E.string contents)
+	Jim.task "write file"
+	[ E.string path, E.string contents ]
 	(D.succeed ())
 ```
