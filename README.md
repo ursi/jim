@@ -23,7 +23,7 @@ const
 	jim = require(`@ursi/jim`),
 	{Elm} = require(`elm.js`);
 
-jim.regTask(`write file`, fsp.writeFile);
+jim.task(`write file`, fsp.writeFile);
 
 Elm.Main.init();
 ```
