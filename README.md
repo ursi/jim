@@ -1,7 +1,6 @@
 # What is Jim?
 
-Think of Jim as its own language that is a superset of [Elm](https://elm-lang.org/). Jim adds more JavaScript interop capabilities on top of Elm. Right now the project is in its infancy, but hopefully some day it will have it's own compiler and package manager, and it may even differ from Elm in other ways.
-
+Jim (**J**avaScript **i**n El**m**) is a tool for adding more FFI options to [Elm](https://elm-lang.org/). Jim allows you to use JavaScript to write your own tasks and functions.
 # Installation
 
 - **Elm:** [elm-git-install](https://github.com/Skinney/elm-git-install)
