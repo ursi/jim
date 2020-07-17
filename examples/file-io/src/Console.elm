@@ -6,9 +6,8 @@ import Json.Encode as E exposing (Value)
 import Task exposing (Task)
 
 
-log : Value -> ()
+log : Value -> Task D.Error ()
 log value =
-    function "console.log"
+    task "console.log"
         [ value ]
         (D.succeed ())
-        |> Result.withDefault ()

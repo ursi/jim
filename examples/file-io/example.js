@@ -7,7 +7,7 @@ const
 	jim = require(`@ursi/jim`),
 	{Elm} = require(`./elm`);
 
-jim.function(`console.log`, console.log);
+jim.task(`console.log`, console.log);
 jim.function(`path.join`, args => path.join(...args));
 
 jim.task(`fsp.writeFile`, fsp.writeFile);

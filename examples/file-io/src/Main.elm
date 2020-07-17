@@ -8,38 +8,13 @@ import Path
 import Task exposing (Task)
 
 
-main : Program Flags Model Msg
+main : Program Flags () ()
 main =
     Platform.worker
         { init = init
-        , update = update
-        , subscriptions = subscriptions
+        , update = \_ _ -> ( (), Cmd.none )
+        , subscriptions = always Sub.none
         }
-
-
-
--- MODEL
-
-
-type alias Model =
-    { args : List String
-    , path : String
-    }
-
-
-init : Flags -> ( Model, Cmd Msg )
-init { args, dirname } =
-    let
-        path =
-            Path.join [ dirname, "args" ]
-    in
-    ( { args = args
-      , path = path
-      }
-    , path
-        |> Fs.exists
-        |> Task.attempt DirExistanceReceived
-    )
 
 
 type alias Flags =
@@ -48,108 +23,70 @@ type alias Flags =
     }
 
 
+init : Flags -> ( (), Cmd () )
+init { args, dirname } =
+    let
+        path =
+            Path.join [ dirname, "args" ]
 
--- UPDATE
+        mkdir =
+            Fs.mkdir path
 
-
-type Msg
-    = DirExistanceReceived (Result D.Error Bool)
-    | ArgsRead String
-    | NoOp
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        ArgsRead args ->
-            let
-                _ =
-                    Console.log <| E.string args
-            in
-            ( model, Cmd.none )
-
-        DirExistanceReceived result ->
-            case result of
-                Ok exists ->
-                    ( model
-                    , let
-                        mkdir =
-                            Fs.mkdir model.path
-
-                        writeArgs =
-                            model.path
-                                |> Fs.readdir
-                                |> Task.andThen
-                                    (List.map
-                                        (\file ->
-                                            [ model.path, file ]
-                                                |> Path.join
-                                                |> Fs.unlink
-                                        )
-                                        >> Task.sequence
-                                    )
-                                |> Task.andThen
-                                    (\_ ->
-                                        model.args
-                                            |> List.indexedMap
-                                                (\i arg ->
-                                                    Fs.writeFile
-                                                        (Path.join [ model.path, String.fromInt i ++ ".txt" ])
-                                                        arg
-                                                )
-                                            |> Task.sequence
-                                    )
-                      in
-                      case ( exists, List.isEmpty model.args ) of
-                        ( True, True ) ->
-                            model.path
-                                |> Fs.readdir
-                                |> Task.andThen
-                                    (List.map
-                                        (\file ->
-                                            [ model.path, file ]
-                                                |> Path.join
-                                                |> Fs.readFile
-                                        )
-                                        >> Task.sequence
-                                    )
-                                |> Task.map (String.join " ")
-                                |> Task.attempt (errorToNoOp ArgsRead)
-
-                        ( True, False ) ->
-                            Task.attempt (\_ -> NoOp) writeArgs
-
-                        ( False, True ) ->
-                            Task.attempt (\_ -> NoOp) mkdir
-
-                        ( False, False ) ->
-                            mkdir
-                                |> Task.andThen
-                                    (\_ -> writeArgs)
-                                |> Task.attempt (\_ -> NoOp)
+        writeArgs : Task D.Error ()
+        writeArgs =
+            path
+                |> Fs.readdir
+                |> Task.andThen
+                    (List.map
+                        (\file ->
+                            [ path, file ]
+                                |> Path.join
+                                |> Fs.unlink
+                        )
+                        >> Task.sequence
                     )
+                |> Task.andThen
+                    (\_ ->
+                        args
+                            |> List.indexedMap
+                                (\i arg ->
+                                    Fs.writeFile
+                                        (Path.join [ path, String.fromInt i ++ ".txt" ])
+                                        arg
+                                )
+                            |> Task.sequence
+                    )
+                |> Task.andThen (\_ -> Task.succeed ())
+    in
+    ( ()
+    , Fs.exists path
+        |> Task.andThen
+            (\exists ->
+                case ( exists, List.isEmpty args ) of
+                    ( True, True ) ->
+                        Fs.readdir path
+                            |> Task.andThen
+                                (List.map
+                                    (\file ->
+                                        [ path, file ]
+                                            |> Path.join
+                                            |> Fs.readFile
+                                    )
+                                    >> Task.sequence
+                                )
+                            |> Task.map (String.join " ")
+                            |> Task.andThen (E.string >> Console.log)
 
-                Err _ ->
-                    ( model, Cmd.none )
+                    ( True, False ) ->
+                        writeArgs
 
-        NoOp ->
-            ( model, Cmd.none )
+                    ( False, True ) ->
+                        mkdir
 
-
-errorToNoOp : (a -> Msg) -> (Result D.Error a -> Msg)
-errorToNoOp toMsg result =
-    case result of
-        Ok value ->
-            toMsg value
-
-        Err _ ->
-            NoOp
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+                    ( False, False ) ->
+                        mkdir
+                            |> Task.andThen
+                                (\_ -> writeArgs)
+            )
+        |> Task.attempt (\_ -> ())
+    )
