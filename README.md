@@ -18,9 +18,9 @@ Jim (**J**avaScript **i**n El**m**) is a tool for adding more FFI options to [El
 
 ```javascript
 const
-	{promises: fsp} = require(`fs`),
-	jim = require(`@ursi/jim`),
-	{Elm} = require(`elm.js`);
+    {promises: fsp} = require(`fs`),
+    jim = require(`@ursi/jim`),
+    {Elm} = require(`elm.js`);
 
 jim.task(`write file`, fsp.writeFile);
 
@@ -36,7 +36,7 @@ import Json.Encode as E
 
 writeFile : String -> String -> Task D.Error ()
 writeFile path contents =
-	Jim.task "write file"
-	[ E.string path, E.string contents ]
-	(D.succeed ())
+    Jim.task "write file"
+    [ E.string path, E.string contents ]
+    (D.succeed ())
 ```
