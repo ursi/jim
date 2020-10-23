@@ -55,8 +55,8 @@ init { args, dirname } =
                                         arg
                                 )
                             |> Task.sequence
+                            |> Task.map (always ())
                     )
-                |> Task.andThen (\_ -> Task.succeed ())
     in
     ( ()
     , Fs.exists path
