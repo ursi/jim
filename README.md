@@ -1,20 +1,21 @@
-# What is Jim?
+## What is Jim?
 
 Jim (**J**avaScript **i**n El**m**) is a tool for adding more FFI options to [Elm](https://elm-lang.org/). Jim allows you to use JavaScript to write your own tasks and functions.
-# Installation
+
+## Installation
 
 - **Elm:** [elm-git-install](https://github.com/Skinney/elm-git-install)
 - **[JavaScript](https://github.com/ursi/jim-js):** `npm install @ursi/jim`
 
 
-# Documentation
+## Documentation
 
 - [Jim](https://elm-doc-preview.netlify.app/Jim?repo=ursi%2Fjim&version=master)
 - [JavaScript](https://github.com/ursi/jim-js)
 
-# Example
+## Example
 
-## JavaScript (Node.js)
+### JavaScript (Node.js)
 
 ```javascript
 const
@@ -27,7 +28,7 @@ jim.task(`write file`, fsp.writeFile);
 Elm.Main.init();
 ```
 
-## Jim
+### Jim
 
 ```elm
 import Jim
